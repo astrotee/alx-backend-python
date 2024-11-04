@@ -32,3 +32,34 @@ class TestGithubOrgClient(TestCase):
             self.assertEqual(client._public_repos_url,
                              'https://api.github.com/orgs/google/repos'
                              )
+
+    @mock.patch('client.get_json')
+    def test_public_repos(self, mock_json):
+        "test public_repos method"
+        mock_json.return_value = [
+            {
+                'name': 'truth',
+                'license': {'key': 'apache-2.0',
+                            'name': 'Apache License 2.0',
+                            },
+            },
+            {
+                'name': 'ruby-openid-apps-discovery',
+                'license': None,
+            }
+        ]
+        with mock.patch('client.GithubOrgClient._public_repos_url',
+                        new_callable=mock.PropertyMock) as mock_property:
+            mock_property.return_value = (
+                'https://api.github.com/orgs/google/'
+                'repos'
+            )
+            client = GithubOrgClient('google')
+            client.public_repos()
+            self.assertEqual(client.public_repos(),
+                             ['truth',
+                              'ruby-openid-apps-discovery',
+                              ]
+                             )
+            mock_property.assert_called_once()
+            mock_json.assert_called_once()
