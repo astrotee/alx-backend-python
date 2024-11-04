@@ -62,7 +62,7 @@ class TestGithubOrgClient(TestCase):
                               ]
                              )
             mock_property.assert_called_once()
-            mock_json.assert_called_once()
+        mock_json.assert_called_once()
 
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
